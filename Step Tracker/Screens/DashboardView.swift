@@ -5,6 +5,7 @@
 //  Created by Robert Ramirez on 4/28/24.
 //
 
+import Charts
 import SwiftUI
 
 enum HealthMetricContext: CaseIterable, Identifiable {
@@ -27,7 +28,7 @@ struct DashboardView: View {
   @State private var isShowingPermissionPrimingSheet = false
   @State private var selectedStat: HealthMetricContext = .steps
   var isSteps: Bool { selectedStat == .steps}
-  
+
   var body: some View {
     NavigationStack {
       ScrollView {
@@ -40,54 +41,13 @@ struct DashboardView: View {
           }
           .pickerStyle(.segmented)
           
-          VStack {
-            NavigationLink(value: selectedStat) {
-              HStack {
-                VStack(alignment:.leading) {
-                  Label("Steps", systemImage: "figure.walk")
-                    .font(.title.bold())
-                    .foregroundStyle(.pink)
-                  
-                  Text("Avg: 10k Steps")
-                    .font(.caption)
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-              }
-            }
-            .foregroundStyle(.secondary)
-            .padding(.bottom, 12)
-            
-            RoundedRectangle(cornerRadius: 12)
-              .foregroundStyle(.secondary)
-              .frame(height: 150)
-          }
-          .padding()
-          .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemBackground)))
-          
-          VStack(alignment: .leading) {
-            VStack(alignment:.leading) {
-              Label("Averages", systemImage: "calendar")
-                .font(.title.bold())
-                .foregroundStyle(.pink)
-              
-              Text("Last 28 Days")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            }
-            
-            RoundedRectangle(cornerRadius: 12)
-              .foregroundStyle(.secondary)
-              .frame(height: 240)
-          }
-          .padding()
-          .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemBackground)))
+          StepBarChart(selectedStat: selectedStat, chartData: hkManager.stepData)
+          StepPieChart(chartData: ChartMath.averageWeekdayCount(for: hkManager.stepData))
         }
       }
       .padding()
       .task {
+        await hkManager.fetchStepCount()
         isShowingPermissionPrimingSheet = !hasSeenPermissionPriming
       }
       .navigationTitle("Dashboard")
