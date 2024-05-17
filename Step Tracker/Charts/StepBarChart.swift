@@ -92,7 +92,8 @@ struct StepBarChart: View {
       }
     }
     .padding()
-    .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemBackground)))    }
+    .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemBackground)))
+  }
 
   var AnnotaionView: some View {
     VStack(alignment: .leading) {
@@ -115,5 +116,5 @@ struct StepBarChart: View {
 }
 
 #Preview {
-  StepBarChart(selectedStat: .steps, chartData: HealthMetric.mockData)
+  StepBarChart(selectedStat: .steps, chartData: MockData.steps)
 }
