@@ -29,7 +29,7 @@ class ChartMath {
   static func averageDailyWeightDiffs(for weights: [HealthMetric]) -> [WeekdayChartData] {
     var diffValues: [(date: Date, value: Double)] = []
 
-    for i in 0..<weights.count {
+    for i in 1..<weights.count {
       let date = weights[i].date
       let diff = weights[i].value - weights[i - 1].value
       diffValues.append((date: date, value: diff))
