@@ -60,7 +60,7 @@ struct HealthDataListView: View {
         switch writeError {
         case .authNotDetermined, .noData, .unableToCompleteRequest:
           EmptyView()
-        case .sharingDenied(let quantityType):
+        case .sharingDenied(_):
           Button("Settings") {
             // Deep Link
             UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
