@@ -37,36 +37,44 @@ struct StepPieChart: View {
         }
         .padding(.bottom, 0) // 12 is the value from the course
 
-        Chart {
-          ForEach(chartData) { weekday in
-            SectorMark(
-              angle: .value("Average Steps", weekday.value),
-              innerRadius: .ratio(0.618),
-              outerRadius: selectedWeekday?.date.weekdayInt == weekday.date.weekdayInt ? 140 : 110,
-              angularInset: 1)
-            .foregroundStyle(.pink.gradient)
-            .cornerRadius(6)
-            .opacity(selectedWeekday?.date.weekdayInt == weekday.date.weekdayInt ? 1.0 : 0.3)
+        if chartData.isEmpty {
+          ChartEmptyView(
+            systemImageName: "chart.pie",
+            title: "No Data",
+            description: "There is not step count data from the Health App."
+          )
+        } else {
+          Chart {
+            ForEach(chartData) { weekday in
+              SectorMark(
+                angle: .value("Average Steps", weekday.value),
+                innerRadius: .ratio(0.618),
+                outerRadius: selectedWeekday?.date.weekdayInt == weekday.date.weekdayInt ? 140 : 110,
+                angularInset: 1)
+              .foregroundStyle(.pink.gradient)
+              .cornerRadius(6)
+              .opacity(selectedWeekday?.date.weekdayInt == weekday.date.weekdayInt ? 1.0 : 0.3)
+            }
           }
-        }
-        .chartAngleSelection(value: $rawSelectedChartValue.animation(.easeOut))
-        .frame(height: 240)
-        .chartBackground { proxy in
-          GeometryReader { geo in
-            if let plotFrame = proxy.plotFrame {
-              let frame = geo[plotFrame]
-              if let selectedWeekday {
-                VStack {
-                  Text(selectedWeekday.date.weekdayTitle)
-                    .font(.title3.bold())
-                    .contentTransition(.identity) // Figure out how to remove the side to side animation shift
+          .chartAngleSelection(value: $rawSelectedChartValue.animation(.easeOut))
+          .frame(height: 240)
+          .chartBackground { proxy in
+            GeometryReader { geo in
+              if let plotFrame = proxy.plotFrame {
+                let frame = geo[plotFrame]
+                if let selectedWeekday {
+                  VStack {
+                    Text(selectedWeekday.date.weekdayTitle)
+                      .font(.title3.bold())
+                      .contentTransition(.identity) // Figure out how to remove the side to side animation shift
 
-                  Text(selectedWeekday.value, format: .number.precision(.fractionLength(0)))
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-                    .contentTransition(.numericText())
+                    Text(selectedWeekday.value, format: .number.precision(.fractionLength(0)))
+                      .fontWeight(.medium)
+                      .foregroundStyle(.secondary)
+                      .contentTransition(.numericText())
+                  }
+                  .position(x: frame.midX, y: frame.midY)
                 }
-                .position(x: frame.midX, y: frame.midY)
               }
             }
           }
