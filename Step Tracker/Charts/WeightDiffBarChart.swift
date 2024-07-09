@@ -28,41 +28,42 @@ struct WeightDiffBarChart: View {
       isNav: false
     )
     ChartContainer(config: config) {
-      if chartData.isEmpty {
-        ChartEmptyView(
-          systemImageName: "chart.bar",
-          title: "No Data",
-          description: "There is not weight data from the Health App."
-        )
-      } else {
-        Chart {
-          if let selectedData {
-            ChartAnnotationView(data: selectedData, context: .weight)
-          }
-
-          ForEach(chartData) { weightDiff in
-            BarMark(
-              x: .value("Date", weightDiff.date, unit: .day),
-              y: .value("Weight Diff", weightDiff.value)
-            )
-            .foregroundStyle(weightDiff.value >= 0 ? Color.indigo.gradient : Color.mint.gradient)
-          }
+      Chart {
+        if let selectedData {
+          ChartAnnotationView(data: selectedData, context: .weight)
         }
-        .frame(height: 150)
-        .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
-        .chartXAxis {
-          AxisMarks(values: .stride(by: .day)) {
-            AxisValueLabel(format: .dateTime.weekday(), centered: true)
-          }
+
+        ForEach(chartData) { weightDiff in
+          BarMark(
+            x: .value("Date", weightDiff.date, unit: .day),
+            y: .value("Weight Diff", weightDiff.value)
+          )
+          .foregroundStyle(weightDiff.value >= 0 ? Color.indigo.gradient : Color.mint.gradient)
         }
-        .chartYAxis {
-          AxisMarks { value in
-            AxisGridLine()
-              .foregroundStyle(Color.secondary.opacity(0.3))
+      }
+      .frame(height: 150)
+      .chartXSelection(value: $rawSelectedDate.animation(.easeInOut))
+      .chartXAxis {
+        AxisMarks(values: .stride(by: .day)) {
+          AxisValueLabel(format: .dateTime.weekday(), centered: true)
+        }
+      }
+      .chartYAxis {
+        AxisMarks { value in
+          AxisGridLine()
+            .foregroundStyle(Color.secondary.opacity(0.3))
 
-            AxisValueLabel()
+          AxisValueLabel()
 
-          }
+        }
+      }
+      .overlay {
+        if chartData.isEmpty {
+          ChartEmptyView(
+            systemImageName: "chart.bar",
+            title: "No Data",
+            description: "There is not weight data from the Health App."
+          )
         }
       }
     }
