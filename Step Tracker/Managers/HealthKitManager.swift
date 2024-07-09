@@ -9,44 +9,6 @@ import Foundation
 import HealthKit
 import Observation
 
-enum STError: LocalizedError {
-  case authNotDetermined
-  case sharingDenied(quantityType: String)
-  case noData
-  case unableToCompleteRequest
-  case invalidValue
-
-  var errorDescription: String? {
-    switch self {
-    case .authNotDetermined:
-      "Need Access to Health Data"
-    case .sharingDenied(_):
-      "No Write Access"
-    case .noData:
-      "No Data"
-    case .unableToCompleteRequest:
-      "Unable to Complete Request"
-    case .invalidValue:
-      "Invalid Value"
-    }
-  }
-
-  var failureReason: String {
-    switch self {
-    case .authNotDetermined:
-      "You have not given access to your Health Data. Please go to Settings > Health > Data Access & Device"
-    case .sharingDenied(quantityType: let quantityType):
-      "You have denied access to upload your \(quantityType) data.\n\nYou can change this in Settings > Health > Data Access & Devices."
-    case .noData:
-      "There is no data for this health statistic"
-    case .unableToCompleteRequest:
-      "We are unable to complete your req;uest at this time.\n\nPlease try again later or contact support."
-    case .invalidValue:
-      "Must be a numeric value with a maximum value of one decimal place."
-    }
-  }
-}
-
 @Observable
 class HealthKitManager {
   let store = HKHealthStore()
@@ -56,27 +18,23 @@ class HealthKitManager {
   var weightData: [HealthMetric] = []
   var weightDiffData: [HealthMetric] = []
 
-  func fetchStepCount() async throws {
+  func fetchStepCount() async throws -> [HealthMetric] {
     guard store.authorizationStatus(for: HKQuantityType(.stepCount)) != .notDetermined else {
       throw STError.authNotDetermined
     }
 
-    let calendar = Calendar.current
-    let today = calendar.startOfDay(for: .now)
-    let endDate = calendar.date(byAdding: .day, value: 1, to: today)!
-    let startDate = calendar.date(byAdding: .day, value: -28, to: endDate)
-
-    let queryPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+    let interval = createDateInterval(from: .now, daysBack: 28)
+    let queryPredicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
     let samplePredicate = HKSamplePredicate.quantitySample(type: HKQuantityType(.stepCount), predicate: queryPredicate)
     let stepsQuery = HKStatisticsCollectionQueryDescriptor(
       predicate: samplePredicate,
       options: .cumulativeSum,
-      anchorDate: endDate,
+      anchorDate: interval.end,
       intervalComponents: .init(day: 1))
 
     do {
       let stepCounts = try await stepsQuery.result(for: store)
-      stepData = stepCounts.statistics().map {
+      return stepCounts.statistics().map {
         .init(date: $0.startDate, value: $0.sumQuantity()?.doubleValue(for: .count()) ?? 0)
       }
     } catch  HKError.errorNoData {
@@ -86,58 +44,26 @@ class HealthKitManager {
     }
   }
 
-  func fetchWeights() async throws {
+  func fetchWeights(daysBack: Int) async throws -> [HealthMetric] {
     guard store.authorizationStatus(for: HKQuantityType(.bodyMass)) != .notDetermined else {
       throw STError.authNotDetermined
     }
-    let calendar = Calendar.current
-    let today = calendar.startOfDay(for: .now)
-    let endDate = calendar.date(byAdding: .day, value: 1, to: today)!
-    let startDate = calendar.date(byAdding: .day, value: -28, to: endDate)
 
-    let queryPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+    let interval = createDateInterval(from: .now, daysBack: daysBack)
+    let queryPredicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
     let samplePredicate = HKSamplePredicate.quantitySample(type: HKQuantityType(.bodyMass), predicate: queryPredicate)
     let weightQuery = HKStatisticsCollectionQueryDescriptor(
       predicate: samplePredicate,
       options: .mostRecent,
-      anchorDate: endDate,
+      anchorDate: interval.end,
       intervalComponents: .init(day: 1))
 
     do {
       let weights = try await weightQuery.result(for: store)
-      weightData = weights.statistics().map {
+      return weights.statistics().map {
         .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
       }
     } catch HKError.errorNoData {
-      throw STError.noData
-    } catch {
-      throw STError.unableToCompleteRequest
-    }
-  }
-
-  func fetchWeightsForDifferentials() async throws {
-    guard store.authorizationStatus(for: HKQuantityType(.bodyMass)) != .notDetermined else {
-      throw STError.authNotDetermined
-    }
-    let calendar = Calendar.current
-    let today = calendar.startOfDay(for: .now)
-    let endDate = calendar.date(byAdding: .day, value: 1, to: today)!
-    let startDate = calendar.date(byAdding: .day, value: -29, to: endDate)
-
-    let queryPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
-    let samplePredicate = HKSamplePredicate.quantitySample(type: HKQuantityType(.bodyMass), predicate: queryPredicate)
-    let weightQuery = HKStatisticsCollectionQueryDescriptor(
-      predicate: samplePredicate,
-      options: .mostRecent,
-      anchorDate: endDate,
-      intervalComponents: .init(day: 1))
-
-    do {
-      let weights = try await weightQuery.result(for: store)
-      weightDiffData = weights.statistics().map {
-        .init(date: $0.startDate, value: $0.mostRecentQuantity()?.doubleValue(for: .pound()) ?? 0)
-      }
-    }  catch HKError.errorNoData {
       throw STError.noData
     } catch {
       throw STError.unableToCompleteRequest
@@ -189,6 +115,14 @@ class HealthKitManager {
     }
   }
 
+  private func createDateInterval(from date: Date, daysBack: Int) -> DateInterval {
+    let calendar = Calendar.current
+    let startOfEndDate = calendar.startOfDay(for: date)
+    let endDate = calendar.date(byAdding: .day, value: 1, to: startOfEndDate)!
+    let startDate = calendar.date(byAdding: .day, value: -daysBack, to: endDate)!
+
+    return .init(start: startDate, end: endDate)
+  }
   //##### Updates Simulator chart data #####
   /*
    func addSimulatorData() async {
