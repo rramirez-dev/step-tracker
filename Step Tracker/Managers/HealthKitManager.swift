@@ -17,7 +17,11 @@ class HealthKitManager {
   var stepData: [HealthMetric] = []
   var weightData: [HealthMetric] = []
   var weightDiffData: [HealthMetric] = []
-
+  
+  /// Fetch last 28 days of step count from HealthKit
+  /// - Returns: Array of  ``HealthMetric``
+  ///
+  /// Futher discussion about what this method does
   func fetchStepCount() async throws -> [HealthMetric] {
     guard store.authorizationStatus(for: HKQuantityType(.stepCount)) != .notDetermined else {
       throw STError.authNotDetermined
@@ -43,7 +47,12 @@ class HealthKitManager {
       throw STError.unableToCompleteRequest
     }
   }
-
+  
+  /// Fetch most recent weight sample on each day for a specified number of day back from today
+  ///
+  /// More detailed discussion
+  /// - Parameter daysBack: days back from today. Ex - 28 will return the last 28 days
+  /// - Returns: Array of ``HealthMetric``
   func fetchWeights(daysBack: Int) async throws -> [HealthMetric] {
     guard store.authorizationStatus(for: HKQuantityType(.bodyMass)) != .notDetermined else {
       throw STError.authNotDetermined
@@ -69,7 +78,11 @@ class HealthKitManager {
       throw STError.unableToCompleteRequest
     }
   }
-
+  
+  /// Write step data to HealthKit. Requires HealthKit write permissions
+  /// - Parameters:
+  ///   - date: Date for step count value
+  ///   - value: Step count value
   func addStepData(for date: Date, value: Double) async throws {
     let status = store.authorizationStatus(for: HKQuantityType(.stepCount))
     switch status {
@@ -91,7 +104,11 @@ class HealthKitManager {
       throw STError.unableToCompleteRequest
     }
   }
-
+  
+  /// Wrie weight value to HealthKit. Requires HealthKit write permission
+  /// - Parameters:
+  ///   - date: Date for weight value
+  ///   - value: Weight value in pounds. Uses pounds as a Double for .bodyMass conversions
   func addWeightData(for date: Date, value: Double) async throws {
     let status = store.authorizationStatus(for: HKQuantityType(.bodyMass))
     switch status {
@@ -114,7 +131,12 @@ class HealthKitManager {
       throw STError.unableToCompleteRequest
     }
   }
-
+  
+  /// Creates a DateInterval between two dates
+  /// - Parameters:
+  ///   - date: End of date interval. Ex - today
+  ///   - daysBack: Start of date interval. Ex - 28 days ago
+  /// - Returns: Date range between two dates as a DateInterval
   private func createDateInterval(from date: Date, daysBack: Int) -> DateInterval {
     let calendar = Calendar.current
     let startOfEndDate = calendar.startOfDay(for: date)
