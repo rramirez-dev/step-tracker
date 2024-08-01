@@ -27,7 +27,7 @@ struct ChartContainer<Content: View>: View {
       } else {
         titleView
           .foregroundStyle(.secondary)
-          .padding(.bottom, 12)
+          .padding(.bottom, 0)
       }
 
       content()
