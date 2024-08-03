@@ -43,6 +43,8 @@ I solved this challenge by pulling the last 29 days of weight data and calculate
     return weekdayChartData
   }
 ```
+# Charts
+![Steps](assets/steps.png) ![Weights](assets/weights.png)
 
 # Additional Project Implementations
 * Error Handling & Alerts
