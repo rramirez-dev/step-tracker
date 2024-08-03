@@ -3,7 +3,7 @@ Step Tracker integrates Apple Health to display the users most up-to-date step a
 
 Users can also upload new step and weight data directly to HealthKit through the Step Tracker App.
 
-#Technologies Used
+# Technologies Used
 * SwiftUI
 * HealthKit
 * Swift Charts
