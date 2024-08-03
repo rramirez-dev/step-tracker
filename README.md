@@ -11,6 +11,13 @@ Users can also upload new step and weight data directly to HealthKit through the
 * DocC
 * Git & GitHub
 
+# Animated Charts
+
+
+
+https://github.com/user-attachments/assets/d3983a4d-b411-4919-b66d-56fb0d36576e
+
+
 # Challenges
 Calculating the average weight difference per day of the week for the weight Bar Chart.
 I solved this challenge by pulling the last 29 days of weight data and calculated the difference between each weekday. I then took the average of each weekdays gain/loss and used the weekday averages as plot points on the weight bar chart. I used different color bars to represent gain and losses to assist users with visualizing their progress on the chart.
