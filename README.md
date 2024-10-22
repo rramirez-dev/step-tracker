@@ -3,13 +3,20 @@ Step Tracker integrates Apple Health to display the users most up-to-date step a
 
 Users can also upload new step and weight data directly to HealthKit through the Step Tracker App.
 
-#Technologies Used
+# Technologies Used
 * SwiftUI
 * HealthKit
 * Swift Charts
 * Swift Algorithms
 * DocC
 * Git & GitHub
+
+# Animated Charts
+
+
+
+https://github.com/user-attachments/assets/d3983a4d-b411-4919-b66d-56fb0d36576e
+
 
 # Challenges
 Calculating the average weight difference per day of the week for the weight Bar Chart.
@@ -43,6 +50,8 @@ I solved this challenge by pulling the last 29 days of weight data and calculate
     return weekdayChartData
   }
 ```
+# Charts
+![Steps](assets/steps.png) ![Weights](assets/weights.png)
 
 # Additional Project Implementations
 * Error Handling & Alerts
