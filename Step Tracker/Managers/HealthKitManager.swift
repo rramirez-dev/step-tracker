@@ -145,6 +145,49 @@ class HealthKitManager {
 
     return .init(start: startDate, end: endDate)
   }
+  
+  /// Export Step and Weight data into CSV, PDF, JSON formats
+  /// - Parameters:
+  ///   - for: Indicates weather the data is step or weight data
+  ///   - exportOptions: Indicate the export formats that will be generated
+  func exportData( for metric: HealthMetricContext, to exportOptions:ExportType) -> URL {
+    let fileURL = generateCSV(metric: metric)
+    print(fileURL)
+    return fileURL
+  }
+
+  private func generateCSV(metric: HealthMetricContext) -> URL {
+    var fileURL: URL!
+    let filename = getDocumentDirectory().appendingPathComponent("\(metric.title).csv")
+    var content = "date,value,\n"
+    var healthData: [HealthMetric] = []
+
+    if(metric == .steps) {
+      healthData = stepData
+    } else {
+      healthData = weightData
+    }
+    for data in healthData {
+      let date = data.date.formatted(date: .numeric, time: .omitted)
+      let value = String(data.value.formatted(.number.precision(.fractionLength(metric == .steps ? 0 : 1)).grouping(.never)))
+      content.append("\(date),\(value)\n")
+    }
+    fileURL = filename
+    print("\(metric.title) Log \n\(content)")
+    do {
+      try content.write(to: fileURL, atomically: true, encoding: .utf8)
+    } catch {
+      print("Error writing to file: \(error.localizedDescription)")
+    }
+
+    return fileURL
+  }
+
+  private func getDocumentDirectory() -> URL {
+    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    return paths[0]
+  }
+
   //##### Updates Simulator chart data #####
   /*
    func addSimulatorData() async {
