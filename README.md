@@ -10,6 +10,8 @@ Users can also upload new step and weight data directly to HealthKit through the
 * Swift Algorithms
 * DocC
 * Git & GitHub
+* Swift Testing
+* Swift 6 Concurrency
 
 # Animated Charts
 
