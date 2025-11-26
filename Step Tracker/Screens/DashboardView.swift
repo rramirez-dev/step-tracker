@@ -30,8 +30,16 @@ struct DashboardView: View {
   @State private var isShowingAlert = false
   @State private var fetchError: STError = .noData
 
-  var backgroundColor: Color {
+  var metricColor: Color {
     selectedStat == .steps ? .pink : .indigo
+  }
+
+  var navBarTint: Color {
+    if #available(iOS 26.0, *) {
+      return .primary
+    } else {
+      return metricColor
+    }
   }
 
   var body: some View {
@@ -63,7 +71,7 @@ struct DashboardView: View {
       .toolbarTitleDisplayMode(.inlineLarge)
       .background(
         LinearGradient(
-          colors: [backgroundColor.opacity(0.25), .clear],
+          colors: [metricColor.opacity(0.25), .clear],
           startPoint: .topLeading,
           endPoint: .bottomTrailing)
       )
@@ -81,7 +89,7 @@ struct DashboardView: View {
         Text(fetchError.failureReason)
       }
     }
-    .tint(selectedStat == .steps ? .pink : .indigo)
+    .tint(navBarTint)
   }
 
   private func fetchHealthData() {
