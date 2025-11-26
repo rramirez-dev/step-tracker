@@ -18,6 +18,9 @@ struct HealthDataListView: View {
   @State private var writeError: STError = STError.noData
 
   var metric: HealthMetricContext
+  var backgroundColor: Color {
+    metric == .steps ? .pink : .indigo
+  }
 
   var listData: [HealthMetric] {
     metric == .steps ? hkData.stepData : hkData.weightData
@@ -31,9 +34,17 @@ struct HealthDataListView: View {
         Text(data.date, format: .dateTime.month().day().year())
           .accessibilityLabel(data.date.accessibilityDate)
       }
+      .listRowBackground(Color(.secondarySystemBackground).opacity(0.35))
       .accessibilityElement(children: .combine)
     }
     .navigationTitle(metric.title)
+    .scrollContentBackground(.hidden)
+    .background(
+      LinearGradient(
+        colors: [backgroundColor.opacity(0.25), .clear],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing)
+    )
     .sheet(isPresented: $isShowingAddData) {
       addDataView
     }

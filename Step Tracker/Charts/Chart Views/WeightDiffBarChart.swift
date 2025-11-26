@@ -33,6 +33,7 @@ struct WeightDiffBarChart: View {
               x: .value("Date", weightDiff.date, unit: .day),
               y: .value("Weight Diff", weightDiff.value)
             )
+            .cornerRadius(4)
             .foregroundStyle(weightDiff.value >= 0 ? Color.indigo.gradient : Color.mint.gradient)
           }
           .accessibilityLabel(weightDiff.date.weekdayTitle)
