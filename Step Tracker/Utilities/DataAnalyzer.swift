@@ -14,8 +14,11 @@ import Playgrounds
 final class DataAnalyzer {
   static let shared = DataAnalyzer()
   let model: SystemLanguageModel = .default
+  var isThinking = false
+  var coachMessage: String.PartiallyGenerated?
 
   func analyzeHealthData() async {
+    isThinking = true
     let session = LanguageModelSession(
       model: .default,
       tools: [HealthDataTool()],
@@ -37,8 +40,13 @@ final class DataAnalyzer {
         """
 
     do {
-      let response = try await session.respond(to: prompt)
-      print(response.content)
+      let stream = session.streamResponse(to: prompt)
+      for try await partial in stream {
+        isThinking = false
+        if partial.content != "null" {
+          coachMessage = partial.content
+        }
+      }
     } catch {
       print(error.localizedDescription)
     }
