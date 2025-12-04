@@ -11,6 +11,7 @@
 		7F16A4832BF65147001EFE32 /* WeightLineChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F16A4822BF65147001EFE32 /* WeightLineChart.swift */; };
 		7F16A4862BF70656001EFE32 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F16A4852BF70656001EFE32 /* MockData.swift */; };
 		7F1A73592C2386AC00A2859D /* ChartEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1A73582C2386AC00A2859D /* ChartEmptyView.swift */; };
+		7F2E82932EE144DA006AB2CB /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7F2E82922EE144DA006AB2CB /* AppIcon.icon */; };
 		7F3510742BDF4E5300250F7C /* Step_TrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3510732BDF4E5300250F7C /* Step_TrackerApp.swift */; };
 		7F3510762BDF4E5300250F7C /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3510752BDF4E5300250F7C /* DashboardView.swift */; };
 		7F3510782BDF4E5300250F7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7F3510772BDF4E5300250F7C /* Assets.xcassets */; };
@@ -49,6 +50,7 @@
 		7F16A4822BF65147001EFE32 /* WeightLineChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightLineChart.swift; sourceTree = "<group>"; };
 		7F16A4852BF70656001EFE32 /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		7F1A73582C2386AC00A2859D /* ChartEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartEmptyView.swift; sourceTree = "<group>"; };
+		7F2E82922EE144DA006AB2CB /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		7F3510702BDF4E5300250F7C /* Step Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Step Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F3510732BDF4E5300250F7C /* Step_TrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step_TrackerApp.swift; sourceTree = "<group>"; };
 		7F3510752BDF4E5300250F7C /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 		7F3510722BDF4E5300250F7C /* Step Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				7F2E82922EE144DA006AB2CB /* AppIcon.icon */,
 				7F9B6D142BE9D5E1006BB204 /* Step Tracker.entitlements */,
 				7F3510732BDF4E5300250F7C /* Step_TrackerApp.swift */,
 				7F16A4842BF705E9001EFE32 /* Utilities */,
@@ -321,6 +324,7 @@
 			files = (
 				7F35107B2BDF4E5300250F7C /* Preview Assets.xcassets in Resources */,
 				7F3510782BDF4E5300250F7C /* Assets.xcassets in Resources */,
+				7F2E82932EE144DA006AB2CB /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
