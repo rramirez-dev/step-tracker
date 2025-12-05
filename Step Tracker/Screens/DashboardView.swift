@@ -25,10 +25,24 @@ struct DashboardView: View {
   
   @Environment(HealthKitManager.self) private var hkManager
   @Environment(HealthKitData.self) private var hkData
+  @Namespace private var zoomTransition
   @State private var isShowingPermissionPrimingSheet = false
   @State private var selectedStat: HealthMetricContext = .steps
   @State private var isShowingAlert = false
   @State private var fetchError: STError = .noData
+  @State private var isShowingCoachView = false
+
+  var metricColor: Color {
+    selectedStat == .steps ? .pink : .indigo
+  }
+
+  var navBarTint: Color {
+    if #available(iOS 26.0, *) {
+      return .primary
+    } else {
+      return metricColor
+    }
+  }
 
   var body: some View {
     NavigationStack {
@@ -51,10 +65,18 @@ struct DashboardView: View {
             WeightDiffBarChart(chartData: ChartHelper.averageDailyWeightDiffs(for: hkData.weightDiffData))
           }
         }
+        .padding()
+
       }
-      .padding()
       .task { fetchHealthData() }
       .navigationTitle("Dashboard")
+      .toolbarTitleDisplayMode(.inlineLarge)
+      .background(
+        LinearGradient(
+          colors: [metricColor.opacity(0.25), .clear],
+          startPoint: .topLeading,
+          endPoint: .bottomTrailing)
+      )
       .navigationDestination(for: HealthMetricContext.self) { metric in
         HealthDataListView(metric: metric)
       }
@@ -63,13 +85,27 @@ struct DashboardView: View {
       }, content: {
         HealthKitPermissionPrimingView()
       })
+      .backportSheet(isPresented: $isShowingCoachView, namespace: zoomTransition)
       .alert(isPresented: $isShowingAlert, error: fetchError) { fetchError in
         // Action Button
       } message: { fetchError in
         Text(fetchError.failureReason)
       }
+      .toolbar {
+        if #available(iOS 26, *) {
+          if DataAnalyzer.shared.model.isAvailable {
+            ToolbarItem {
+              Button("Analyze Data", systemImage: "apple.intelligence") {
+                isShowingCoachView.toggle()
+                Task { await DataAnalyzer.shared.analyzeHealthData() }
+              }
+            }
+            .matchedTransitionSource(id: "coachView", in: zoomTransition)
+          }
+        }
+      }
     }
-    .tint(selectedStat == .steps ? .pink : .indigo)
+    .tint(navBarTint)
   }
 
   private func fetchHealthData() {
@@ -103,4 +139,5 @@ struct DashboardView: View {
 #Preview {
   DashboardView()
     .environment(HealthKitManager())
+    .environment(HealthKitData())
 }
